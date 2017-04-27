@@ -46,3 +46,5 @@ java.io.FileNotFoundException: /Users/jorenjacob/Documents/1st Master/SoftProjec
 [2017-04-27 11:54:02,922] INFO [kafka-log-cleaner-thread-0], Shutting down (kafka.log.LogCleaner)
 [2017-04-27 11:54:02,922] INFO [kafka-log-cleaner-thread-0], Shutdown completed (kafka.log.LogCleaner)
 [2017-04-27 11:54:02,922] INFO [kafka-log-cleaner-thread-0], Stopped  (kafka.log.LogCleaner)
+[2017-04-27 14:47:46,328] INFO Starting the log cleaner (kafka.log.LogCleaner)
+[2017-04-27 14:47:46,382] INFO [kafka-log-cleaner-thread-0], Starting  (kafka.log.LogCleaner)
