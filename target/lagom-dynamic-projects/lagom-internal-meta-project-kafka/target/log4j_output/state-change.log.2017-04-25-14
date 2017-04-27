@@ -1,0 +1,2 @@
+[2017-04-25 14:05:21,080] TRACE Controller 0 epoch 1 received response {error_code=0} for a request sent to broker dhcp-177-187.vub.ac.be:9092 (id: 0 rack: null) (state.change.logger)
+[2017-04-25 14:09:00,674] TRACE Controller 0 epoch 1 received response {error_code=0} for a request sent to broker dhcp-177-187.vub.ac.be:9092 (id: 0 rack: null) (state.change.logger)
