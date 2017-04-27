@@ -20,6 +20,7 @@ public final class Board {
   public final String id;
   public final String test;
   public final String test2;
+  public int y = 5;
 
   @JsonCreator
   public Board(@JsonProperty("id") String id, @JsonProperty("title") String title) {

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2017-04-27 11:34:41,591] INFO Starting the log cleaner (kafka.log.LogCleaner)
 [2017-04-27 11:34:41,593] INFO [kafka-log-cleaner-thread-0], Starting  (kafka.log.LogCleaner)
 [2017-04-27 11:36:30,689] INFO Shutting down the log cleaner. (kafka.log.LogCleaner)
@@ -48,3 +49,11 @@ java.io.FileNotFoundException: /Users/jorenjacob/Documents/1st Master/SoftProjec
 [2017-04-27 11:54:02,922] INFO [kafka-log-cleaner-thread-0], Stopped  (kafka.log.LogCleaner)
 [2017-04-27 14:47:46,328] INFO Starting the log cleaner (kafka.log.LogCleaner)
 [2017-04-27 14:47:46,382] INFO [kafka-log-cleaner-thread-0], Starting  (kafka.log.LogCleaner)
+=======
+[2017-04-27 15:06:53,094] INFO Starting the log cleaner (kafka.log.LogCleaner)
+[2017-04-27 15:06:53,096] INFO [kafka-log-cleaner-thread-0], Starting  (kafka.log.LogCleaner)
+[2017-04-27 15:09:02,261] INFO Shutting down the log cleaner. (kafka.log.LogCleaner)
+[2017-04-27 15:09:02,261] INFO [kafka-log-cleaner-thread-0], Shutting down (kafka.log.LogCleaner)
+[2017-04-27 15:09:02,261] INFO [kafka-log-cleaner-thread-0], Stopped  (kafka.log.LogCleaner)
+[2017-04-27 15:09:02,262] INFO [kafka-log-cleaner-thread-0], Shutdown completed (kafka.log.LogCleaner)
+>>>>>>> 44a67abe19031981bce28e01537f621023017c11

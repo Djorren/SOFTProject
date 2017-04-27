@@ -13,6 +13,9 @@ import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 
 /**
+ * 
+ * Cool
+ * 
  * The Board service interface.
  * <p>
  * This describes everything that Lagom needs to know about how to serve and
@@ -20,6 +23,7 @@ import com.lightbend.lagom.javadsl.api.ServiceCall;
  */
 public interface BoardService extends Service {
 
+	public int y = 5;
   /**
    * Example: curl http://localhost:9000/api/board/Alice
    */

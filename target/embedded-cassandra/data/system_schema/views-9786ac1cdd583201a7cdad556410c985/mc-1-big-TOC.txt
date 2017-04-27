@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 CompressionInfo.db
 Data.db
 Filter.db
@@ -6,3 +7,13 @@ Index.db
 Statistics.db
 TOC.txt
 Digest.crc32
+=======
+Index.db
+Data.db
+Summary.db
+Digest.crc32
+TOC.txt
+Statistics.db
+Filter.db
+CompressionInfo.db
+>>>>>>> 44a67abe19031981bce28e01537f621023017c11
