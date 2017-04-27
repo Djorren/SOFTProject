@@ -12,10 +12,7 @@ import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 
-/**
- * 
- * Cool
- * 
+/** 
  * The Board service interface.
  * <p>
  * This describes everything that Lagom needs to know about how to serve and
