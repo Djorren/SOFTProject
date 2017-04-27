@@ -39,7 +39,8 @@ public interface BoardCommand extends Jsonable {
   @JsonDeserialize
   public final class UseGreetingMessage implements BoardCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
     public final String message;
-
+    public int x = 10;
+    
     @JsonCreator
     public UseGreetingMessage(String message) {
       this.message = Preconditions.checkNotNull(message, "message");
