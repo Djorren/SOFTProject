@@ -23,7 +23,6 @@ import com.lightbend.lagom.javadsl.api.ServiceCall;
  */
 public interface BoardService extends Service {
 
-	public int y = 5;
   /**
    * Example: curl http://localhost:9000/api/board/Alice
    */

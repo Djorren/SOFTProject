@@ -16,7 +16,6 @@ import com.google.common.base.Preconditions;
 public final class GreetingMessage {
 
   public final String message;
-  public int x = 10;
   
   @JsonCreator
   public GreetingMessage(String message) {
