@@ -18,11 +18,13 @@ public final class Board {
 
   public String title;
   public final String id;
+  public final String test;
 
   @JsonCreator
   public Board(@JsonProperty("id") String id, @JsonProperty("title") String title) {
     this.title = Preconditions.checkNotNull(title, "title");
     this.id = Preconditions.checkNotNull(id, "id");
+    this.test = "komaanheseg";
   }
 
   @Override
