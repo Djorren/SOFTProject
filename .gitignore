@@ -1,0 +1,16 @@
+*.class
+*.log
+target
+ideatarget
+.target
+.cache
+.cache-main
+.cache-tests
+.classpath
+.project
+.tmpBin
+.factorypath
+.settings
+logs
+.idea
+.DS_Store
