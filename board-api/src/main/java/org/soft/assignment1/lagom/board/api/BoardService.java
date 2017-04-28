@@ -24,7 +24,7 @@ public interface BoardService extends Service {
    * Example: curl http://localhost:9000/api/board/Alice
    */
    ServiceCall<NotUsed, String> hello(String id);
-   ServiceCall<Board, Done> create();
+
 
 
   /**
@@ -38,6 +38,7 @@ public interface BoardService extends Service {
   /**
    * Create: curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId", "title": "MyTitle"}' http://localhost:9000/api/board/create/
    */
+  ServiceCall<Board, Done> create();
   
   @Override
   default Descriptor descriptor() {
