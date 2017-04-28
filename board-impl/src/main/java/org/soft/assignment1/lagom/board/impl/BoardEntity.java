@@ -3,18 +3,21 @@
  */
 package org.soft.assignment1.lagom.board.impl;
 
-import java.time.LocalDateTime;
+//import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 
 import akka.Done;
 
+import org.soft.assignment1.lagom.board.api.Board;
 import org.soft.assignment1.lagom.board.impl.BoardCommand.CreateBoard;
-import org.soft.assignment1.lagom.board.impl.BoardCommand.Hello;
-import org.soft.assignment1.lagom.board.impl.BoardCommand.UseGreetingMessage;
+import org.soft.assignment1.lagom.board.impl.BoardCommand.GetBoard;
+import org.soft.assignment1.lagom.board.impl.BoardCommand.GetBoardReply;
+//import org.soft.assignment1.lagom.board.impl.BoardCommand.Hello;
+//import org.soft.assignment1.lagom.board.impl.BoardCommand.UseGreetingMessage;
 import org.soft.assignment1.lagom.board.impl.BoardEvent.BoardCreated;
-import org.soft.assignment1.lagom.board.impl.BoardEvent.GreetingMessageChanged;
+//import org.soft.assignment1.lagom.board.impl.BoardEvent.GreetingMessageChanged;
 
 /**
  * This is an event sourced entity. It has a state, {@link BoardState}, which
@@ -54,31 +57,30 @@ public class BoardEntity extends PersistentEntity<BoardCommand, BoardEvent, Boar
      * Otherwise, the default state is to use the Hello greeting.
      */
     BehaviorBuilder b = newBehaviorBuilder(
-        snapshotState.orElse(new BoardState("Board", LocalDateTime.now().toString())));
+        snapshotState.orElse(new BoardState(Optional.empty())));
 
     /*
      * Command handler for the UseGreetingMessage command.
      */
-    b.setCommandHandler(UseGreetingMessage.class, (cmd, ctx) ->
+   // b.setCommandHandler(UseGreetingMessage.class, (cmd, ctx) ->
     // In response to this command, we want to first persist it as a
     // GreetingMessageChanged event
-    ctx.thenPersist(new GreetingMessageChanged(cmd.message),
+   // ctx.thenPersist(new GreetingMessageChanged(cmd.message),
         // Then once the event is successfully persisted, we respond with done.
-        evt -> ctx.reply(Done.getInstance())));
+      //  evt -> ctx.reply(Done.getInstance())));
 
     
     
     /*
      * Event handler for the GreetingMessageChanged event.
      */
-    b.setEventHandler(GreetingMessageChanged.class,
+   // b.setEventHandler(GreetingMessageChanged.class,
         // We simply update the current state to use the greeting message from
         // the event.
-        evt -> new BoardState(evt.message, LocalDateTime.now().toString()));
+     //   evt -> new BoardState(Optional.of(new Board(evt.id, evt.title))));
 
     
    // ADDED
-   
     b.setCommandHandler(CreateBoard.class, (cmd, ctx) ->
     // In response to this command, we want to first persist it as a
     // GreetingMessageChanged event
@@ -87,24 +89,31 @@ public class BoardEntity extends PersistentEntity<BoardCommand, BoardEvent, Boar
         evt -> ctx.reply(Done.getInstance())));
     
     // ADDED
+    b.setReadOnlyCommandHandler(GetBoard.class, (cmd, ctx) -> {
+    // In response to this command, we want to first persist it as a
+    // GreetingMessageChanged event
+    ctx.reply(new GetBoardReply(state().board));
+    });
     
+    
+    // ADDED
     b.setEventHandler(BoardCreated.class, 
-    	evt -> new BoardState(evt.title, LocalDateTime.now().toString()));
-    
+    	evt -> new BoardState(Optional.of(new Board(evt.id, evt.title))));
     
     
     /*
      * Command handler for the Hello command.
      */
-    b.setReadOnlyCommandHandler(Hello.class,
+   // b.setReadOnlyCommandHandler(Hello.class,
         // Get the greeting from the current state, and prepend it to the name
         // that we're sending
         // a greeting to, and reply with that message.
-        (cmd, ctx) -> ctx.reply(state().title + ", " + cmd.name + "!"));
+      //  (cmd, ctx) -> ctx.reply(state().board.title + ", " + cmd.name + "!"));
 
     /*
      * We've defined all our behaviour, so build and return it.
      */
+    
     return b.build();
   }
 

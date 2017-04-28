@@ -13,12 +13,14 @@ import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
 import com.lightbend.lagom.javadsl.persistence.ReadSide;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 
-
-import java.util.Optional;
-
+import java.util.List;
+import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import org.soft.assignment1.lagom.board.api.GreetingMessage;
+//import org.soft.assignment1.lagom.board.api.GreetingMessage;
+import org.pcollections.PSequence;
+import org.pcollections.TreePVector;
 import org.soft.assignment1.lagom.board.api.Board;
 import org.soft.assignment1.lagom.board.api.BoardService;
 import org.soft.assignment1.lagom.board.impl.BoardCommand.*;
@@ -41,7 +43,7 @@ public class BoardServiceImpl implements BoardService {
     readSide.register(BoardEventProcessor.class);
   }
 
-  @Override
+  /*@Override
   public ServiceCall<NotUsed, String> hello(String id) {
     return request -> {
       // Look up the hello world entity for the given ID.
@@ -49,9 +51,9 @@ public class BoardServiceImpl implements BoardService {
       // Ask the entity the Hello command.
       return ref.ask(new Hello(id, Optional.empty()));
     };
-  }
+  }*/
 
-  // our own
+  // ADDED
   @Override
   public ServiceCall<Board, Done> create() {
     return request -> {
@@ -62,7 +64,24 @@ public class BoardServiceImpl implements BoardService {
     };
   }
   
+  
+  // ADDED
   @Override
+  public ServiceCall<NotUsed, PSequence<String>> listAll() {
+	  return req -> {
+		  CompletionStage<PSequence<String>> result =
+				  cassandrasession.selectAll("SELECT * FROM board")
+				  .thenApply(rows -> {
+					  List<String> boards = rows.stream()
+							  .map(row -> row.getString("id"))
+							  .collect(Collectors.toList());
+					  return TreePVector.from(boards);
+				  });
+		  return result;
+	  };
+}
+  
+  /*@Override
   public ServiceCall<GreetingMessage, Done> useGreeting(String id) {
     return request -> {
       // Look up the hello world entity for the given ID.
@@ -71,10 +90,11 @@ public class BoardServiceImpl implements BoardService {
       return ref.ask(new UseGreetingMessage(request.message));
     };
 
-  }
+  }*/
   
-  
-  
-  
+  private PersistentEntityRef<BoardCommand> boardEntityRef(String id) {
+	    PersistentEntityRef<BoardCommand> ref = persistentEntityRegistry.refFor(BoardEntity.class, id);
+	    return ref;
+	  }
 
 }

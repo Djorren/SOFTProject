@@ -6,11 +6,15 @@ package org.soft.assignment1.lagom.board.impl;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import org.soft.assignment1.lagom.board.api.BoardStatus;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import com.lightbend.lagom.javadsl.persistence.AggregateEvent;
+import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.serialization.Jsonable;
 
 /**
@@ -19,12 +23,17 @@ import com.lightbend.lagom.serialization.Jsonable;
  * By convention, the events should be inner classes of the interface, which
  * makes it simple to get a complete picture of what events an entity has.
  */
-public interface BoardEvent extends Jsonable {
+public interface BoardEvent extends Jsonable, AggregateEvent<BoardEvent> {
 
+	@Override
+    default public AggregateEventTag<BoardEvent> aggregateTag() {
+        return BoardEventTag.INSTANCE;
+    }
+	
   /**
    * An event that represents a change in greeting message.
    */
-  @SuppressWarnings("serial")
+  /*@SuppressWarnings("serial")
   @Immutable
   @JsonDeserialize
   public final class GreetingMessageChanged implements BoardEvent {
@@ -57,7 +66,7 @@ public interface BoardEvent extends Jsonable {
     public String toString() {
       return MoreObjects.toStringHelper("GreetingMessageChanged").add("message", message).toString();
     }
-  }
+  }*/
   
   
   /**
@@ -68,13 +77,15 @@ public interface BoardEvent extends Jsonable {
   @JsonDeserialize
   public final class BoardCreated implements BoardEvent {
 	public final String id;
-    public String title;
+    public final String title;
+    public final BoardStatus status;
 
 
     @JsonCreator
     public BoardCreated(@JsonProperty("id") String id, @JsonProperty("title") String title) {
       this.id = Preconditions.checkNotNull(id, "id");
       this.title = Preconditions.checkNotNull(title, "title");
+      this.status = BoardStatus.CREATED;
     }
 
     @Override
