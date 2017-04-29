@@ -113,4 +113,48 @@ public interface BoardEvent extends Jsonable, AggregateEvent<BoardEvent> {
   }
   
   
+  /**
+   * An event that represents a change the fields of a board.
+   */
+  @SuppressWarnings("serial")
+  @Immutable
+  @JsonDeserialize
+  public final class BoardUpdated implements BoardEvent {
+	
+	public final String id;
+	public final String title;
+	public final BoardStatus status;
+
+    @JsonCreator
+    public BoardUpdated(@JsonProperty("id") String id, @JsonProperty("title") String title, @JsonProperty("status") BoardStatus status) {
+      this.id = Preconditions.checkNotNull(id, "id");
+      this.title = Preconditions.checkNotNull(title, "title");
+      this.status = Preconditions.checkNotNull(status, "status");
+    }
+
+    @Override
+    public boolean equals(@Nullable Object another) {
+      if (this == another)
+        return true;
+      return another instanceof BoardUpdated && equalTo((BoardUpdated) another);
+    }
+
+    private boolean equalTo(BoardUpdated another) {
+      return id.equals(another.id);
+    }
+
+    @Override
+    public int hashCode() {
+      int h = 31;
+      h = h * 17 + id.hashCode();
+      return h;
+    }
+
+    @Override
+    public String toString() {
+      return MoreObjects.toStringHelper("BoardUpdated").add("id", id).toString();
+    }
+  }
+  
+  
 }

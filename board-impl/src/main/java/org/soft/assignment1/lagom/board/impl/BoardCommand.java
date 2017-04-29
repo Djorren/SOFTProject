@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
-//import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
 
 import akka.Done;
@@ -166,6 +165,51 @@ public interface BoardCommand extends Jsonable {
     }
   }
   
+  /**
+   * A command to update the fields of a board.
+   * <p>
+   * It has a reply type of {@link akka.Done}, which is sent back to the caller
+   * when all the events emitted by this command are successfully persisted.
+   */
+  @SuppressWarnings("serial")
+  @Immutable
+  @JsonDeserialize
+  public final class UpdateBoard implements BoardCommand, PersistentEntity.ReplyType<Done> {
+	  public final String id;
+	  public final String title;
+	  public final BoardStatus status;
+    
+    
+    @JsonCreator
+    public UpdateBoard(String id, String title, BoardStatus status) {
+      this.title = Preconditions.checkNotNull(title, "title");
+      this.id = Preconditions.checkNotNull(id, "id");
+      this.status = Preconditions.checkNotNull(status, "status");
+    }
+
+    @Override
+    public boolean equals(@Nullable Object another) {
+      if (this == another)
+        return true;
+      return another instanceof UpdateBoard && equalTo((UpdateBoard) another);
+    }
+
+    private boolean equalTo(UpdateBoard another) {
+      return id.equals(another.id);
+    }
+
+    @Override
+    public int hashCode() {
+      int h = 31;
+      h = h * 17 + id.hashCode();
+      return h;
+    }
+
+    @Override
+    public String toString() {
+      return MoreObjects.toStringHelper("DoChangeStatus").add("id", id).toString();
+    }
+  }
   
 //ADDED
   

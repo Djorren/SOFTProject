@@ -40,7 +40,7 @@ public class BoardEventProcessor extends ReadSideProcessor<BoardEvent> {
 	 
 	private CompletionStage<Done> prepareInfo() {
 		System.out.println("INSERTED INTO TABLE LOL XD");
-		return session.prepare("INSERT INTO board (id, title) VALUES (?, ?)").thenApply(ps -> {
+		return session.prepare("INSERT INTO board (id) VALUES (?)").thenApply(ps -> {
 			setInfo(ps);
 			return Done.getInstance();
 		});
@@ -49,7 +49,6 @@ public class BoardEventProcessor extends ReadSideProcessor<BoardEvent> {
 	private CompletionStage<List<BoundStatement>> processInfoChanged(BoardCreated event) {
 		 BoundStatement bindInfo = info.bind();
 		 bindInfo.setString("id", event.id);
-		 bindInfo.setString("title", event.title);
 		 return completedStatement(bindInfo);
 	}
 	 
@@ -71,8 +70,8 @@ public class BoardEventProcessor extends ReadSideProcessor<BoardEvent> {
 		System.out.println("TABLE CREATED LOL XD");
 		return session.executeCreateTable(
 				"CREATE TABLE IF NOT EXISTS board ("
-				+ "id text, title text, "
-				+ "PRIMARY KEY (id, title))"
+				+ "id text, "
+				+ "PRIMARY KEY (id))"
 		);
 	 }
 };
