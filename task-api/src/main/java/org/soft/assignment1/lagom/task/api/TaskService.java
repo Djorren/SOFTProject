@@ -4,10 +4,11 @@
 package org.soft.assignment1.lagom.task.api;
 
 import static com.lightbend.lagom.javadsl.api.Service.named;
-import static com.lightbend.lagom.javadsl.api.Service.namedCall;
+import static com.lightbend.lagom.javadsl.api.Service.pathCall;
 
-import akka.NotUsed;
-import akka.stream.javadsl.Source;
+import org.soft.assignment1.lagom.task.api.Task;
+
+import akka.Done;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
@@ -20,11 +21,18 @@ import com.lightbend.lagom.javadsl.api.ServiceCall;
  */
 public interface TaskService extends Service {
 
-  ServiceCall<Source<String, NotUsed>, Source<String, NotUsed>> stream();
+// curl -H "Content-Type: application/json" -X POST -d '{"id": "taskId", "title": "MyTitle", "details": "detail", "color": "green", "boardid": "MyId"}' http://localhost:9000/api/task/create/
+	
+	ServiceCall<Task, Done> create();
 
   @Override
   default Descriptor descriptor() {
-    return named("task").withCalls(namedCall("task", this::stream))
-      .withAutoAcl(true);
+	// @formatter:off
+			return named("task").withCalls(
+					//pathCall("/api/board/:id",  this::hello),
+					//pathCall("/api/board/:id", this::useGreeting),
+					pathCall("/api/task/create/", this::create)
+					).withAutoAcl(true);
+			// @formatter:on
   }
 }
