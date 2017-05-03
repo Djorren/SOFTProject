@@ -12,12 +12,23 @@ import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
 
 
-import org.soft.assignment1.lagom.task.impl.TaskCommand;
+import org.soft.assignment1.lagom.task.impl.TaskCommand.*;
 import org.soft.assignment1.lagom.task.impl.TaskEntity;
-import org.soft.assignment1.lagom.task.impl.TaskCommand.CreateTask;
+//import org.soft.assignment1.lagom.task.impl.TaskCommand.CreateTask;
+//import org.soft.assignment1.lagom.task.impl.TaskCommand.GetTask;
+import org.soft.assignment1.lagom.task.impl.TaskCommand.UpdateTask;
 import org.soft.assignment1.lagom.board.api.BoardService;
+import org.soft.assignment1.lagom.task.api.ChangeStatus;
+import org.soft.assignment1.lagom.task.api.GetInfo;
+//import org.soft.assignment1.lagom.board.impl.BoardCommand;
+//import org.soft.assignment1.lagom.board.impl.BoardCommand.GetBoard;
+//import org.soft.assignment1.lagom.board.impl.BoardCommand.UpdateBoard;
+import org.soft.assignment1.lagom.task.api.UpdateTitle;
 import org.soft.assignment1.lagom.task.api.Task;
 import org.soft.assignment1.lagom.task.api.TaskService;
+import org.soft.assignment1.lagom.task.api.TaskStatus;
+import org.soft.assignment1.lagom.task.api.UpdateColor;
+import org.soft.assignment1.lagom.task.api.UpdateDetails;
 
 import javax.inject.Inject;
 
@@ -59,6 +70,119 @@ public class TaskServiceImpl implements TaskService {
 			});
 			
 		};
+	}
+	
+	// added
+	@Override
+	  public ServiceCall<UpdateTitle, Done> updateTitle() {
+	    return request -> {
+	      // Look up the hello world entity for the given ID.
+	      PersistentEntityRef<TaskCommand> ref = TaskEntityRef(request.id);
+	      // Look up the current values of the board object
+	      return ref.ask(new GetTask()).thenApply(reply -> {
+	    	  if (reply.task.isPresent()) {
+	    		  ref.ask(new UpdateTask(request.id, request.title, reply.task.get().details, reply.task.get().color, reply.task.get().boardid, reply.task.get().status));
+	    		  return Done.getInstance();
+	    	  } else {
+	    		  throw new NotFound("Board id"); 
+	    	  }
+	      });
+	  };
+	}
+	
+	
+
+	
+	// added
+	@Override
+	  public 	ServiceCall<UpdateDetails, Done> updateDetails(){
+	    return request -> {
+	      // Look up the hello world entity for the given ID.
+	      PersistentEntityRef<TaskCommand> ref = TaskEntityRef(request.id);
+	      // Look up the current values of the board object
+	      return ref.ask(new GetTask()).thenApply(reply -> {
+	    	  if (reply.task.isPresent()) {
+	    		  ref.ask(new UpdateTask(request.id, reply.task.get().details, request.details, reply.task.get().color, reply.task.get().boardid, reply.task.get().status));
+	    		  return Done.getInstance();
+	    	  } else {
+	    		  throw new NotFound("Board id"); 
+	    	  }
+	      });
+	  };
+	}
+	
+	@Override
+	  public 	ServiceCall<UpdateColor, Done> updateColor(){
+	    return request -> {
+	      // Look up the hello world entity for the given ID.
+	      PersistentEntityRef<TaskCommand> ref = TaskEntityRef(request.id);
+	      // Look up the current values of the board object
+	      return ref.ask(new GetTask()).thenApply(reply -> {
+	    	  if (reply.task.isPresent()) {
+	    		  ref.ask(new UpdateTask(request.id, reply.task.get().details, reply.task.get().details, request.color, reply.task.get().boardid, reply.task.get().status));
+	    		  return Done.getInstance();
+	    	  } else {
+	    		  throw new NotFound("Board id"); 
+	    	  }
+	      });
+	  };
+	}
+	
+	@Override
+	  public ServiceCall<ChangeStatus, Done> changeStatus() {
+	    return request -> {
+	      // Look up the hello world entity for the given ID.
+	      PersistentEntityRef<TaskCommand> ref = TaskEntityRef(request.id);
+	      // Look up the current values of the board object
+	      return ref.ask(new GetTask()).thenApply(reply -> {
+	    	  if (!reply.task.isPresent()) {
+	    		  throw new NotFound("Unknown board id"); 
+	    	  } else if (request.status.equals("BACKLOG")) {
+	    		  ref.ask(new UpdateTask(request.id, reply.task.get().title, reply.task.get().details,reply.task.get().color, reply.task.get().boardid, TaskStatus.BACKLOG));
+	    		  return Done.getInstance();
+	  	    } else if (request.status.equals("SCHEDULED")) {
+	  	    	ref.ask(new UpdateTask(request.id, reply.task.get().title, reply.task.get().details,reply.task.get().color, reply.task.get().boardid, TaskStatus.SCHEDULED));
+	    		  return Done.getInstance();
+	  	    } else if (request.status.equals("STARTED")) {
+	  	    	ref.ask(new UpdateTask(request.id, reply.task.get().title, reply.task.get().details,reply.task.get().color, reply.task.get().boardid, TaskStatus.STARTED));
+	    		  return Done.getInstance();
+	  	    } else if (request.status.equals("COMPLETED")) {
+	  	    	ref.ask(new UpdateTask(request.id, reply.task.get().title, reply.task.get().details,reply.task.get().color, reply.task.get().boardid, TaskStatus.COMPLETED));
+	    		  return Done.getInstance();
+	  	    } else if (request.status.equals("DELETED")) {
+	  	    	ref.ask(new UpdateTask(request.id, reply.task.get().title, reply.task.get().details,reply.task.get().color, reply.task.get().boardid, TaskStatus.DELETED));
+	    		  return Done.getInstance();
+	  	    } else if (request.status.equals("ARCHIVED")) {
+	  	    	ref.ask(new UpdateTask(request.id, reply.task.get().title, reply.task.get().details,reply.task.get().color, reply.task.get().boardid, TaskStatus.ARCHIVED));
+	    		  return Done.getInstance();
+	  	    } else {
+	  	    	throw new NotFound("Unknown status");
+	    	  }
+	      });
+	  };
+	}
+	
+	@Override
+	  public 	ServiceCall<GetInfo, Task> getInfo(){
+	    return request -> {
+	      // Look up the hello world entity for the given ID.
+	      PersistentEntityRef<TaskCommand> ref = TaskEntityRef(request.id);
+	      // Look up the current values of the board object
+	      return ref.ask(new GetTask()).thenApply(reply -> {
+	    	  if (reply.task.isPresent()) {  
+	    		  return reply.task.get();
+	    	  } else {
+	    		  throw new NotFound("Board id"); 
+	    	  }
+	      });
+	  };
+	}
+	
+	
+	
+	private PersistentEntityRef<TaskCommand> TaskEntityRef(String id) {
+		PersistentEntityRef<TaskCommand> ref = persistentEntityRegistry.refFor(TaskEntity.class, id);
+		return ref;
 	}
 	
 }

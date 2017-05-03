@@ -10,8 +10,11 @@ import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 
 import akka.Done;
 
+
 import org.soft.assignment1.lagom.task.api.Task;
 import org.soft.assignment1.lagom.task.impl.TaskCommand.CreateTask;
+import org.soft.assignment1.lagom.task.impl.TaskCommand.GetTask;
+import org.soft.assignment1.lagom.task.impl.TaskCommand.GetTaskReply;
 import org.soft.assignment1.lagom.task.impl.TaskEvent.TaskCreated;
 
 
@@ -88,6 +91,14 @@ public class TaskEntity extends PersistentEntity<TaskCommand, TaskEvent, TaskSta
 		b.setEventHandler(TaskCreated.class, 
 		evt -> new TaskState(Optional.of(new Task(evt.id, evt.title, evt.details, evt.color, evt.boardid, evt.status))));
 
+		
+		// ADDED
+		b.setReadOnlyCommandHandler(GetTask.class, (cmd, ctx) -> {
+			// In response to this command, we want to first persist it as a
+			// GreetingMessageChanged event
+			ctx.reply(new GetTaskReply(state().task));
+		});
+		
 /*
 		// ADDED
 		b.setCommandHandler(UpdateBoard.class, (cmd, ctx) ->

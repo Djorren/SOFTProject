@@ -173,7 +173,7 @@ public interface TaskCommand extends Jsonable {
 
    @Override
    public int hashCode() {
-     return 2053226012;
+     return 2053226013;
    }
 
    @Override
