@@ -29,101 +29,9 @@ import akka.Done;
  * supports.
  */
 public interface BoardCommand extends Jsonable {
-
-  /**
-   * A command to switch the greeting message.
-   * <p>
-   * It has a reply type of {@link akka.Done}, which is sent back to the caller
-   * when all the events emitted by this command are successfully persisted.
-   */
- /* @SuppressWarnings("serial")
-  @Immutable
-  @JsonDeserialize
-  public final class UseGreetingMessage implements BoardCommand, CompressedJsonable, PersistentEntity.ReplyType<Done> {
-    public final String message;
-    
-    @JsonCreator
-    public UseGreetingMessage(String message) {
-      this.message = Preconditions.checkNotNull(message, "message");
-    }
-
-    @Override
-    public boolean equals(@Nullable Object another) {
-      if (this == another)
-        return true;
-      return another instanceof UseGreetingMessage && equalTo((UseGreetingMessage) another);
-    }
-
-    private boolean equalTo(UseGreetingMessage another) {
-      return message.equals(another.message);
-    }
-
-    @Override
-    public int hashCode() {
-      int h = 31;
-      h = h * 17 + message.hashCode();
-      return h;
-    }
-
-    @Override
-    public String toString() {
-      return MoreObjects.toStringHelper("UseGreetingMessage").add("message", message).toString();
-    }
-  }
-*/
-  /**
-   * A command to say hello to someone using the current greeting message.
-   * <p>
-   * The reply type is String, and will contain the message to say to that
-   * person.
-   */
-  /*@SuppressWarnings("serial")
-  @Immutable
-  @JsonDeserialize
-  public final class Hello implements BoardCommand, PersistentEntity.ReplyType<String> {
-    public final String name;
-    public final Optional<String> organization;
-
-    @JsonCreator
-    public Hello(String name, Optional<String> organization) {
-      this.name = Preconditions.checkNotNull(name, "name");
-      this.organization = Preconditions.checkNotNull(organization, "organization");
-    }
-
-    @Override
-    public boolean equals(@Nullable Object another) {
-      if (this == another)
-        return true;
-      return another instanceof Hello && equalTo((Hello) another);
-    }
-
-    private boolean equalTo(Hello another) {
-      return name.equals(another.name) && organization.equals(another.organization);
-    }
-
-    @Override
-    public int hashCode() {
-      int h = 31;
-      h = h * 17 + name.hashCode();
-      h = h * 17 + organization.hashCode();
-      return h;
-    }
-
-    @Override
-    public String toString() {
-      return MoreObjects.toStringHelper("Hello").add("name", name).add("organization", organization).toString();
-    }
-  }*/
-  
-  
-  
-  // ADDED
   
   /**
    * A command to create a board.
-   * <p>
-   * The reply type is String, and will contain the message to say to that
-   * person.
    */
   @SuppressWarnings("serial")
   @Immutable
@@ -167,9 +75,6 @@ public interface BoardCommand extends Jsonable {
   
   /**
    * A command to update the fields of a board.
-   * <p>
-   * It has a reply type of {@link akka.Done}, which is sent back to the caller
-   * when all the events emitted by this command are successfully persisted.
    */
   @SuppressWarnings("serial")
   @Immutable
@@ -211,14 +116,10 @@ public interface BoardCommand extends Jsonable {
     }
   }
   
-//ADDED
-  
  /**
   * A command to get the board object when a certain board-id is given.
-  * <p>
-  * The reply type is String, and will contain the message to say to that
-  * person.
   */
+  
  @SuppressWarnings("serial")
  @Immutable
  @JsonDeserialize

@@ -49,30 +49,18 @@ public class BoardServiceImpl implements BoardService {
 		readSide.register(BoardEventProcessor.class);
 	}
 
-	/*@Override
-  public ServiceCall<NotUsed, String> hello(String id) {
-    return request -> {
-      // Look up the hello world entity for the given ID.
-      PersistentEntityRef<BoardCommand> ref = persistentEntityRegistry.refFor(BoardEntity.class, id);
-      // Ask the entity the Hello command.
-      return ref.ask(new Hello(id, Optional.empty()));
-    };
-  }*/
-
-	// ADDED
 	@Override
 	public ServiceCall<Board, Done> create() {
 		return request -> {
-			// Look up the hello world entity for the given ID.
-			PersistentEntityRef<BoardCommand> ref = persistentEntityRegistry.refFor(BoardEntity.class, request.id);
-			// Ask the entity the Create command.
+			// Look up the board entity for the given id.
+			PersistentEntityRef<BoardCommand> ref = boardEntityRef(request.id);
+			// Ask the entity the CreateBoard command.
 			return ref.ask(new CreateBoard(request.id, request.title));
 		};
 	}
 
 
 
-	// ADDED
 	@Override
 	public ServiceCall<NotUsed, PSequence<String>> listAll() {
 		return req -> {
@@ -118,23 +106,11 @@ public class BoardServiceImpl implements BoardService {
 		};
 	}
 
-
-
-	/*@Override
-  public ServiceCall<GreetingMessage, Done> useGreeting(String id) {
-    return request -> {
-      // Look up the hello world entity for the given ID.
-      PersistentEntityRef<BoardCommand> ref = persistentEntityRegistry.refFor(BoardEntity.class, id);
-      // Tell the entity to use the greeting message specified.
-      return ref.ask(new UseGreetingMessage(request.message));
-    };
-
-  }*/
 	
 	@Override
 	  public ServiceCall<ChangeStatus, Done> changeStatus() {
 	    return request -> {
-	      // Look up the hello world entity for the given ID.
+	      // Look up the hello world entity for the given id.
 	      PersistentEntityRef<BoardCommand> ref = boardEntityRef(request.id);
 	      // Look up the current values of the board object
 	      return ref.ask(new GetBoard()).thenApply(reply -> {
@@ -156,7 +132,7 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	  public ServiceCall<UpdateTitle, Done> updateTitle() {
 	    return request -> {
-	      // Look up the hello world entity for the given ID.
+	      // Look up the board entity for the given id.
 	      PersistentEntityRef<BoardCommand> ref = boardEntityRef(request.id);
 	      // Look up the current values of the board object
 	      return ref.ask(new GetBoard()).thenApply(reply -> {
@@ -169,53 +145,6 @@ public class BoardServiceImpl implements BoardService {
 	      });
 	  };
 	}
-	/*
-	
-	@Override
-	public ServiceCall<NotUsed, Boolean> CheckBoardid(String id) {
-		return req -> {
-			// get all the board ids that were saved in the board table
-			CompletionStage<List<String>> allBoardIds =
-					cassandrasession.selectAll("SELECT * FROM board")
-					.thenApply(rows -> {
-						List<String> boards = rows.stream()
-								.map(row -> row.getString("id"))
-								.collect(Collectors.toList());
-						return boards;
-					});
-			// filter the ids so that we only have those who belong to non-archived boards
-			CompletionStage<Boolean> bool =
-					allBoardIds.thenApply(boardids -> {
-						// get the board objects that correspond with the ids we got from the boards table
-						List<Board> allBoards = boardids.stream()
-								.map( boardid -> {
-									CompletionStage<Board> completionBoard = boardEntityRef(boardid).ask(new GetBoard()).thenApply(reply -> {
-										return reply.board.get();
-									});
-									try {
-										Board board = completionBoard.toCompletableFuture().get();
-										return board; // return the object we got from the completed future
-									} catch (InterruptedException | ExecutionException e) {
-										e.printStackTrace();
-										return null;
-									}
-								})
-								.collect( Collectors.toList());
-						
-						// create a list containing only the boards with status CREATED
-						List<String> temp = new ArrayList<>();
-						allBoards.forEach((board) -> {
-							if(board.status == BoardStatus.CREATED) {
-								temp.add(board.toString());
-							}
-						});
-						
-						return temp.contains(id);
-					});	  
-			return bool;
-		};
-	}
-	*/
 	
 	@Override
 	public ServiceCall<NotUsed, Boolean> CheckBoardid(String id) {
@@ -223,10 +152,12 @@ public class BoardServiceImpl implements BoardService {
 			CompletionStage<Boolean> bool = boardEntityRef(id).ask(new GetBoard()).thenApply(reply -> {
 				if(reply.board.isPresent()) {
 					if (reply.board.get().status == BoardStatus.CREATED) {
-						return true;
-					} else { return false;
+						return true; // the board exists and the status is CREATED -> true
+					} else {
+						return false; // the board exists but the status is not CREATED -> false
 					}
-				} else {return false;
+				} else {
+					return false; // the board does not exist -> false
 				} 
 			});
 			return bool;
@@ -234,7 +165,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 	
 	
-
+	// Look up the Board Entity that corresponds with a given id
 	private PersistentEntityRef<BoardCommand> boardEntityRef(String id) {
 		PersistentEntityRef<BoardCommand> ref = persistentEntityRegistry.refFor(BoardEntity.class, id);
 		return ref;

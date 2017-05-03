@@ -39,7 +39,6 @@ public class BoardEventProcessor extends ReadSideProcessor<BoardEvent> {
 	}
 	 
 	private CompletionStage<Done> prepareInfo() {
-		System.out.println("INSERTED INTO TABLE LOL XD");
 		return session.prepare("INSERT INTO board (id) VALUES (?)").thenApply(ps -> {
 			setInfo(ps);
 			return Done.getInstance();
@@ -67,7 +66,6 @@ public class BoardEventProcessor extends ReadSideProcessor<BoardEvent> {
 	}
 	
 	private CompletionStage<Done> prepareCreateTables() {
-		System.out.println("TABLE CREATED LOL XD");
 		return session.executeCreateTable(
 				"CREATE TABLE IF NOT EXISTS board ("
 				+ "id text, "

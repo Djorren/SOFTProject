@@ -19,14 +19,7 @@ public final class Board {
   public final String title;
   public final String id;
   public final BoardStatus status;
-  
-
-  /*@JsonCreator
-  public Board(@JsonProperty("id") String id, @JsonProperty("title") String title) {
-    this.title = Preconditions.checkNotNull(title, "title");
-    this.id = Preconditions.checkNotNull(id, "id");
-    this.status = BoardStatus.CREATED;
-  }*/
+ 
   
   @JsonCreator
   public Board(@JsonProperty("id") String id, @JsonProperty("title") String title, @JsonProperty("status") BoardStatus status) {
