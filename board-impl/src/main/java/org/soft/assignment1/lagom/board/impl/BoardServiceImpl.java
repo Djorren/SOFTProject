@@ -221,7 +221,6 @@ public class BoardServiceImpl implements BoardService {
 	public ServiceCall<NotUsed, Boolean> CheckBoardid(String id) {
 		return req -> {
 			CompletionStage<Boolean> bool = boardEntityRef(id).ask(new GetBoard()).thenApply(reply -> {
-				System.out.println(id);
 				if(reply.board.isPresent()) {
 					if (reply.board.get().status == BoardStatus.CREATED) {
 						return true;

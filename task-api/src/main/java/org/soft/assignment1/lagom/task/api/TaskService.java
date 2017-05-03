@@ -32,35 +32,30 @@ public interface TaskService extends Service {
 
 	
 	/**
-	 * 
 	 * curl -H "Content-Type: application/json" -X POST -d '{"id": "taskId", "title": "NewTitle"}' http://localhost:9000/api/task/updatetitle/
 	 */
 	
 	ServiceCall<UpdateTitle, Done> updateTitle();
 	
 	/**
-	 * 
 	 * curl -H "Content-Type: application/json" -X POST -d '{"id": "taskId", "details": "NewDetails"}' http://localhost:9000/api/task/updatedetails/
 	 */
 	
 	ServiceCall<UpdateDetails, Done> updateDetails();
 	
 	/**
-	 * 
 	 * curl -H "Content-Type: application/json" -X POST -d '{"id": "taskId", "color": "NewColor"}' http://localhost:9000/api/task/updatecolor/
 	 */
 	
 	ServiceCall<UpdateColor, Done> updateColor();
 
 	/**
-	 * 
 	 * curl -H "Content-Type: application/json" -X POST -d '{"id": "taskId", "status": "SCHEDULED"}' http://localhost:9000/api/task/changestatus/
 	 */
 	
 	ServiceCall<ChangeStatus, Done> changeStatus();
 	
 	/**
-	 * 
 	 * curl -H "Content-Type: application/json" -X POST -d '{"id": "taskId"}' http://localhost:9000/api/task/getinfo/
 	 */
 	

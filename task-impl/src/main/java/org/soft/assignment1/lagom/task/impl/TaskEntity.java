@@ -10,12 +10,13 @@ import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 
 import akka.Done;
 
-
 import org.soft.assignment1.lagom.task.api.Task;
 import org.soft.assignment1.lagom.task.impl.TaskCommand.CreateTask;
 import org.soft.assignment1.lagom.task.impl.TaskCommand.GetTask;
 import org.soft.assignment1.lagom.task.impl.TaskCommand.GetTaskReply;
+import org.soft.assignment1.lagom.task.impl.TaskCommand.UpdateTask;
 import org.soft.assignment1.lagom.task.impl.TaskEvent.TaskCreated;
+import org.soft.assignment1.lagom.task.impl.TaskEvent.TaskUpdated;
 
 
 /**
@@ -84,22 +85,34 @@ public class TaskEntity extends PersistentEntity<TaskCommand, TaskEvent, TaskSta
 		// In response to this command, we want to first persist it as a
 		// GreetingMessageChanged event
 		ctx.thenPersist(new TaskCreated(cmd.id, cmd.title, cmd.details, cmd.color, cmd.boardid),
-		// Then once the event is successfully persisted, we respond with done.
-		evt -> ctx.reply(Done.getInstance())));
+				// Then once the event is successfully persisted, we respond with done.
+				evt -> ctx.reply(Done.getInstance())));
 
 		// ADDED
 		b.setEventHandler(TaskCreated.class, 
-		evt -> new TaskState(Optional.of(new Task(evt.id, evt.title, evt.details, evt.color, evt.boardid, evt.status))));
+				evt -> new TaskState(Optional.of(new Task(evt.id, evt.title, evt.details, evt.color, evt.boardid, evt.status))));
 
-		
+		// ADDED
+		b.setCommandHandler(UpdateTask.class, (cmd, ctx) ->
+		// In response to this command, we want to first persist it as a
+		// GreetingMessageChanged event
+		ctx.thenPersist(new TaskUpdated(cmd.id, cmd.title, cmd.details, cmd.color, cmd.boardid, cmd.status),
+				// Then once the event is successfully persisted, we respond with done.
+				evt -> ctx.reply(Done.getInstance())));
+
+		// ADDED
+		b.setEventHandler(TaskUpdated.class, 
+				evt -> new TaskState(Optional.of(new Task(evt.id, evt.title, evt.details, evt.color, evt.boardid, evt.status))));
+
+
 		// ADDED
 		b.setReadOnlyCommandHandler(GetTask.class, (cmd, ctx) -> {
 			// In response to this command, we want to first persist it as a
 			// GreetingMessageChanged event
 			ctx.reply(new GetTaskReply(state().task));
 		});
-		
-/*
+
+		/*
 		// ADDED
 		b.setCommandHandler(UpdateBoard.class, (cmd, ctx) ->
 		// In response to this command, we want to first persist it as a
@@ -107,11 +120,11 @@ public class TaskEntity extends PersistentEntity<TaskCommand, TaskEvent, TaskSta
 		ctx.thenPersist(new BoardUpdated(cmd.id, cmd.title, cmd.status),
 		// Then once the event is successfully persisted, we respond with done.
 		evt -> ctx.reply(Done.getInstance())));
-		
+
 		// ADDED
 		b.setEventHandler(BoardUpdated.class, 
 		evt -> new BoardState(Optional.of(new Board(evt.id, evt.title, evt.status))));
-		
+
 		// ADDED
 		b.setReadOnlyCommandHandler(GetBoard.class, (cmd, ctx) -> {
 			// In response to this command, we want to first persist it as a
@@ -119,7 +132,7 @@ public class TaskEntity extends PersistentEntity<TaskCommand, TaskEvent, TaskSta
 			ctx.reply(new GetBoardReply(state().board));
 		});
 
-*/
+		 */
 
 
 
