@@ -23,6 +23,7 @@ public interface TaskService extends Service {
 
 // curl -H "Content-Type: application/json" -X POST -d '{"id": "taskId", "title": "MyTitle", "details": "detail", "color": "green", "boardid": "MyId"}' http://localhost:9000/api/task/create/
 	
+// curl -H "Content-Type: application/json" -X POST -d '{"id": "taskId2", "title": "MyTitle2", "details": "detail", "color": "green", "boardid": "Unknown"}' http://localhost:9000/api/task/create/
 	ServiceCall<Task, Done> create();
 
   @Override
