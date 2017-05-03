@@ -71,6 +71,7 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 
+
 	// ADDED
 	@Override
 	public ServiceCall<NotUsed, PSequence<String>> listAll() {
@@ -163,11 +164,77 @@ public class BoardServiceImpl implements BoardService {
 	    		  ref.ask(new UpdateBoard(request.id, request.title, reply.board.get().status));
 	    		  return Done.getInstance();
 	    	  } else {
-	    		  throw new NotFound("Board id not found"); 
+	    		  throw new NotFound("Board id"); 
 	    	  }
 	      });
 	  };
 	}
+	/*
+	
+	@Override
+	public ServiceCall<NotUsed, Boolean> CheckBoardid(String id) {
+		return req -> {
+			// get all the board ids that were saved in the board table
+			CompletionStage<List<String>> allBoardIds =
+					cassandrasession.selectAll("SELECT * FROM board")
+					.thenApply(rows -> {
+						List<String> boards = rows.stream()
+								.map(row -> row.getString("id"))
+								.collect(Collectors.toList());
+						return boards;
+					});
+			// filter the ids so that we only have those who belong to non-archived boards
+			CompletionStage<Boolean> bool =
+					allBoardIds.thenApply(boardids -> {
+						// get the board objects that correspond with the ids we got from the boards table
+						List<Board> allBoards = boardids.stream()
+								.map( boardid -> {
+									CompletionStage<Board> completionBoard = boardEntityRef(boardid).ask(new GetBoard()).thenApply(reply -> {
+										return reply.board.get();
+									});
+									try {
+										Board board = completionBoard.toCompletableFuture().get();
+										return board; // return the object we got from the completed future
+									} catch (InterruptedException | ExecutionException e) {
+										e.printStackTrace();
+										return null;
+									}
+								})
+								.collect( Collectors.toList());
+						
+						// create a list containing only the boards with status CREATED
+						List<String> temp = new ArrayList<>();
+						allBoards.forEach((board) -> {
+							if(board.status == BoardStatus.CREATED) {
+								temp.add(board.toString());
+							}
+						});
+						
+						return temp.contains(id);
+					});	  
+			return bool;
+		};
+	}
+	*/
+	
+	@Override
+	public ServiceCall<NotUsed, Boolean> CheckBoardid(String id) {
+		return req -> {
+			CompletionStage<Boolean> bool = boardEntityRef(id).ask(new GetBoard()).thenApply(reply -> {
+				System.out.println(id);
+				if(reply.board.isPresent()) {
+					if (reply.board.get().status == BoardStatus.CREATED) {
+						return true;
+					} else { return false;
+					}
+				} else {return false;
+				} 
+			});
+			return bool;
+		};
+	}
+	
+	
 
 	private PersistentEntityRef<BoardCommand> boardEntityRef(String id) {
 		PersistentEntityRef<BoardCommand> ref = persistentEntityRegistry.refFor(BoardEntity.class, id);

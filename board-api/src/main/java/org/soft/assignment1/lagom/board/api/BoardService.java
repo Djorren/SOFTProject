@@ -37,6 +37,7 @@ public interface BoardService extends Service {
 
 	/**
 	 * Create: curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId", "title": "MyTitle"}' http://localhost:9000/api/board/create/
+	 * * Create: curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId2", "title": "MyTitle2"}' http://localhost:9000/api/board/create/
 	 */
 	ServiceCall<Board, Done> create();
 
@@ -61,6 +62,12 @@ public interface BoardService extends Service {
 	 * Create: curl http://localhost:9000/api/board/listall/
 	 */
 	ServiceCall<NotUsed, PSequence<String>> listAll();
+	
+	// ADDED
+	// not public, so not added in descriptor. 
+	// Used by task to check if the given board id exists and if it is not archived
+	
+	ServiceCall<NotUsed, Boolean> CheckBoardid(String id);
 
 
 	@Override
@@ -72,7 +79,8 @@ public interface BoardService extends Service {
 				pathCall("/api/board/create/", this::create),
 				pathCall("/api/board/updatetitle/", this::updateTitle),
 				pathCall("/api/board/changestatus/", this::changeStatus),
-				pathCall("/api/board/listall/", this::listAll)
+				pathCall("/api/board/listall/", this::listAll),
+				pathCall("/api/board/checkboardid/:id", this::CheckBoardid)
 				).withAutoAcl(true);
 		// @formatter:on
 	}
