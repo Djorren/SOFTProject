@@ -38,6 +38,7 @@ public class TaskEventProcessor extends ReadSideProcessor<TaskEvent> {
 	}
 	 
 	private CompletionStage<Done> prepareInfo() {
+		// Insert both the id of the task and the board id for easy access by the listall service
 		return session.prepare("INSERT INTO task (id, boardid) VALUES (?,?)").thenApply(ps -> {
 			setInfo(ps);
 			return Done.getInstance();

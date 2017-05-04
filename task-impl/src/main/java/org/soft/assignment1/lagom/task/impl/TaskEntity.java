@@ -3,12 +3,12 @@
  */
 package org.soft.assignment1.lagom.task.impl;
 
-//import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 
 import akka.Done;
+
 
 import org.soft.assignment1.lagom.task.api.Task;
 import org.soft.assignment1.lagom.task.impl.TaskCommand.CreateTask;
@@ -20,13 +20,10 @@ import org.soft.assignment1.lagom.task.impl.TaskEvent.TaskUpdated;
 
 
 /**
- * This is an event sourced entity. It has a state, {@link BoardState}, which
- * stores what the greeting should be (eg, "Hello").
+ * This is an event sourced entity. It has a state, {@link TaskState}, which
+ * stores what the different field of a board (taskid, title, details, color, boardid, status)
  * <p>
- * Event sourced entities are interacted with by sending them commands. This
- * entity supports two commands, a {@link UseGreetingMessage} command, which is
- * used to change the greeting, and a {@link Hello} command, which is a read
- * only command which returns a greeting to the name specified by the command.
+ * Event sourced entities are interacted with by sending them commands.
  * <p>
  * Commands get translated to events, and it's the events that get persisted by
  * the entity. Each event will have an event handler registered for it, and an
@@ -34,9 +31,6 @@ import org.soft.assignment1.lagom.task.impl.TaskEvent.TaskUpdated;
  * when the event is first created, and it will also be done when the entity is
  * loaded from the database - each event will be replayed to recreate the state
  * of the entity.
- * <p>
- * This entity defines one event, the {@link GreetingMessageChanged} event,
- * which is emitted when a {@link UseGreetingMessage} command is received.
  */
 public class TaskEntity extends PersistentEntity<TaskCommand, TaskEvent, TaskState> {
 
@@ -53,97 +47,38 @@ public class TaskEntity extends PersistentEntity<TaskCommand, TaskEvent, TaskSta
 		 * optimisation that allows the state itself to be persisted to combine many
 		 * events into one), then the passed in snapshotState may have a value that
 		 * can be used.
-		 *
-		 * Otherwise, the default state is to use the Hello greeting.
 		 */
 		BehaviorBuilder b = newBehaviorBuilder(
 				snapshotState.orElse(new TaskState(Optional.empty())));
 
-		/*
-		 * Command handler for the UseGreetingMessage command.
-		 */
-		// b.setCommandHandler(UseGreetingMessage.class, (cmd, ctx) ->
-		// In response to this command, we want to first persist it as a
-		// GreetingMessageChanged event
-		// ctx.thenPersist(new GreetingMessageChanged(cmd.message),
-		// Then once the event is successfully persisted, we respond with done.
-		//  evt -> ctx.reply(Done.getInstance())));
-
-
-
-		/*
-		 * Event handler for the GreetingMessageChanged event.
-		 */
-		// b.setEventHandler(GreetingMessageChanged.class,
-		// We simply update the current state to use the greeting message from
-		// the event.
-		//   evt -> new BoardState(Optional.of(new Board(evt.id, evt.title))));
-
-
-		// ADDED
+		
 		b.setCommandHandler(CreateTask.class, (cmd, ctx) ->
 		// In response to this command, we want to first persist it as a
-		// GreetingMessageChanged event
+		// TaskCreated event
 		ctx.thenPersist(new TaskCreated(cmd.id, cmd.title, cmd.details, cmd.color, cmd.boardid),
 				// Then once the event is successfully persisted, we respond with done.
 				evt -> ctx.reply(Done.getInstance())));
 
-		// ADDED
+		
 		b.setEventHandler(TaskCreated.class, 
 				evt -> new TaskState(Optional.of(new Task(evt.id, evt.title, evt.details, evt.color, evt.boardid, evt.status))));
 
-		// ADDED
+
 		b.setCommandHandler(UpdateTask.class, (cmd, ctx) ->
 		// In response to this command, we want to first persist it as a
-		// GreetingMessageChanged event
+		// TaskUpdated event
 		ctx.thenPersist(new TaskUpdated(cmd.id, cmd.title, cmd.details, cmd.color, cmd.boardid, cmd.status),
 				// Then once the event is successfully persisted, we respond with done.
 				evt -> ctx.reply(Done.getInstance())));
 
-		// ADDED
+
 		b.setEventHandler(TaskUpdated.class, 
 				evt -> new TaskState(Optional.of(new Task(evt.id, evt.title, evt.details, evt.color, evt.boardid, evt.status))));
 
 
-		// ADDED
 		b.setReadOnlyCommandHandler(GetTask.class, (cmd, ctx) -> {
-			// In response to this command, we want to first persist it as a
-			// GreetingMessageChanged event
 			ctx.reply(new GetTaskReply(state().task));
 		});
-
-		/*
-		// ADDED
-		b.setCommandHandler(UpdateBoard.class, (cmd, ctx) ->
-		// In response to this command, we want to first persist it as a
-		// GreetingMessageChanged event
-		ctx.thenPersist(new BoardUpdated(cmd.id, cmd.title, cmd.status),
-		// Then once the event is successfully persisted, we respond with done.
-		evt -> ctx.reply(Done.getInstance())));
-
-		// ADDED
-		b.setEventHandler(BoardUpdated.class, 
-		evt -> new BoardState(Optional.of(new Board(evt.id, evt.title, evt.status))));
-
-		// ADDED
-		b.setReadOnlyCommandHandler(GetBoard.class, (cmd, ctx) -> {
-			// In response to this command, we want to first persist it as a
-			// GreetingMessageChanged event
-			ctx.reply(new GetBoardReply(state().board));
-		});
-
-		 */
-
-
-
-		/*
-		 * Command handler for the Hello command.
-		 */
-		// b.setReadOnlyCommandHandler(Hello.class,
-		// Get the greeting from the current state, and prepend it to the name
-		// that we're sending
-		// a greeting to, and reply with that message.
-		//  (cmd, ctx) -> ctx.reply(state().board.title + ", " + cmd.name + "!"));
 
 		/*
 		 * We've defined all our behaviour, so build and return it.

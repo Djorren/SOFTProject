@@ -8,10 +8,7 @@ import com.google.inject.AbstractModule;
 import com.lightbend.lagom.javadsl.server.ServiceGuiceSupport;
 
 
-
-//import org.soft.assignment1.lagom.board.impl.BoardServiceImpl;
 import org.soft.assignment1.lagom.board.api.BoardService;
-//import org.soft.assignment1.lagom.board.impl.BoardServiceImpl;
 import org.soft.assignment1.lagom.task.api.TaskService;
 
 /**
@@ -22,7 +19,6 @@ public class TaskModule extends AbstractModule implements ServiceGuiceSupport {
   protected void configure() {
 
     bindServices(serviceBinding(TaskService.class, TaskServiceImpl.class));
-   // bindServices(serviceBinding(BoardService.class, BoardServiceImpl.class));
     bindClient(BoardService.class);
     
   }

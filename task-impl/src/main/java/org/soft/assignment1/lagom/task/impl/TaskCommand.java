@@ -29,21 +29,9 @@ import akka.Done;
  * supports.
  */
 public interface TaskCommand extends Jsonable {
-
-  /**
-   * A command to switch the greeting message.
-   * <p>
-   * It has a reply type of {@link akka.Done}, which is sent back to the caller
-   * when all the events emitted by this command are successfully persisted.
-   */
-  
-  // ADDED
   
   /**
    * A command to create a task.
-   * <p>
-   * The reply type is String, and will contain the message to say to that
-   * person.
    */
   @SuppressWarnings("serial")
   @Immutable
@@ -96,7 +84,7 @@ public interface TaskCommand extends Jsonable {
   }
   
   /**
-   * A command to update the fields of a board.
+   * A command to update the fields of a task.
    * <p>
    * It has a reply type of {@link akka.Done}, which is sent back to the caller
    * when all the events emitted by this command are successfully persisted.
@@ -153,13 +141,9 @@ public interface TaskCommand extends Jsonable {
     }
   }
   
-//ADDED
   
  /**
-  * A command to get the board object when a certain board-id is given.
-  * <p>
-  * The reply type is String, and will contain the message to say to that
-  * person.
+  * A command to get the task object when a certain task-id is given.
   */
  @SuppressWarnings("serial")
  @Immutable

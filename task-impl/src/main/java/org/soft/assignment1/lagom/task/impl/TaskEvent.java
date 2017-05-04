@@ -19,7 +19,7 @@ import com.lightbend.lagom.javadsl.persistence.AggregateEventTag;
 import com.lightbend.lagom.serialization.Jsonable;
 
 /**
- * This interface defines all the events that the Board entity supports.
+ * This interface defines all the events that the Task entity supports.
  * <p>
  * By convention, the events should be inner classes of the interface, which
  * makes it simple to get a complete picture of what events an entity has.
@@ -87,7 +87,7 @@ public interface TaskEvent extends Jsonable, AggregateEvent<TaskEvent> {
   
   
   /**
-   * An event that represents a change the fields of a board.
+   * An event that represents a change in the fields of a task.
    */
   @SuppressWarnings("serial")
   @Immutable

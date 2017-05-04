@@ -17,7 +17,7 @@ import com.google.common.base.Preconditions;
 import com.lightbend.lagom.serialization.Jsonable;
 
 /**
- * The state for the {@link Board} entity.
+ * The state for the {@link Task} entity.
  */
 @SuppressWarnings("serial")
 @Immutable

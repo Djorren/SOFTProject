@@ -5,7 +5,6 @@ package org.soft.assignment1.lagom.board.impl;
 
 import akka.Done;
 import akka.NotUsed;
-import scala.collection.parallel.Tasks;
 
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.NotFound;
@@ -21,7 +20,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-//import org.soft.assignment1.lagom.board.api.GreetingMessage;
 import org.pcollections.PSequence;
 import org.pcollections.TreePVector;
 import org.soft.assignment1.lagom.board.api.Board;
@@ -31,9 +29,6 @@ import org.soft.assignment1.lagom.board.api.ChangeStatus;
 import org.soft.assignment1.lagom.board.api.UpdateTitle;
 import org.soft.assignment1.lagom.board.impl.BoardCommand.*;
 import org.soft.assignment1.lagom.board.impl.BoardEventProcessor;
-import org.soft.assignment1.lagom.task.api.ListAll;
-import org.soft.assignment1.lagom.task.api.TaskService;
-import org.soft.assignment1.lagom.task.api.TaskStatus;
 
 /**
  * Implementation of the BoardService.
@@ -42,14 +37,12 @@ public class BoardServiceImpl implements BoardService {
 
 	private final PersistentEntityRegistry persistentEntityRegistry;
 	public final CassandraSession cassandrasession;
-	public final TaskService taskservice;
 
 	@Inject
 	public BoardServiceImpl(PersistentEntityRegistry persistentEntityRegistry, CassandraSession cassandrasession, 
-			ReadSide readSide, TaskService taskservice) {
+			ReadSide readSide) {
 		this.persistentEntityRegistry = persistentEntityRegistry;
 		this.cassandrasession = cassandrasession;
-		this.taskservice = taskservice;
 		persistentEntityRegistry.register(BoardEntity.class);
 		readSide.register(BoardEventProcessor.class);
 	}
@@ -128,10 +121,6 @@ public class BoardServiceImpl implements BoardService {
 	    		  ref.ask(new UpdateBoard(request.id,  reply.board.get().title, BoardStatus.CREATED));
 	    		  return Done.getInstance();
 	  	    } else if (request.status.equals("ARCHIVED")) {
-	  	    	/*CompletionStage<PSequence<String>> allTasks = taskservice.listAll().invoke();
-	  	    	allTasks.thenApply(tas -> {
-	  	    		
-	  	    	});*/
 	  	    	ref.ask(new UpdateBoard(request.id,  reply.board.get().title, BoardStatus.ARCHIVED));
 	    		  return Done.getInstance();
 	  	    } else {
