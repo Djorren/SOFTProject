@@ -7,9 +7,11 @@ import static com.lightbend.lagom.javadsl.api.Service.named;
 import static com.lightbend.lagom.javadsl.api.Service.pathCall;
 
 import org.soft.assignment1.lagom.task.api.UpdateTitle;
+import org.pcollections.PSequence;
 import org.soft.assignment1.lagom.task.api.Task;
 
 import akka.Done;
+
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
@@ -61,7 +63,13 @@ public interface TaskService extends Service {
 	
 	ServiceCall<GetInfo, Task> getInfo();
 	
-
+	/**
+	 * curl -H "Content-Type: application/json" -X POST -d '{"boardid": "MyId"}' http://localhost:9000/api/task/listall/
+	 */
+	ServiceCall<ListAll, PSequence<String>> listAll();
+	
+	
+	
   @Override
   default Descriptor descriptor() {
 	// @formatter:off
@@ -73,7 +81,8 @@ public interface TaskService extends Service {
 					pathCall("/api/task/updatedetails/", this::updateDetails),
 					pathCall("/api/task/updatecolor/", this::updateColor),
 					pathCall("/api/task/changestatus/", this::changeStatus),
-					pathCall("/api/task/getinfo/", this::getInfo)
+					pathCall("/api/task/getinfo/", this::getInfo),
+					pathCall("/api/task/listall/", this::listAll)
 					).withAutoAcl(true);
 			// @formatter:on
   }

@@ -23,26 +23,26 @@ public interface BoardService extends Service {
 
 
 	/**
-	 * Create: curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId", "title": "MyTitle"}' http://localhost:9000/api/board/create/
-	 * Create: curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId2", "title": "MyTitle2"}' http://localhost:9000/api/board/create/
+	 * curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId", "title": "MyTitle"}' http://localhost:9000/api/board/create/
+	 * curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId2", "title": "MyTitle2"}' http://localhost:9000/api/board/create/
 	 */
 	ServiceCall<Board, Done> create();
 
 
 	/**
-	 * Create: curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId", "title": "NewTitle"}' http://localhost:9000/api/board/updatetitle/
+	 * curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId", "title": "NewTitle"}' http://localhost:9000/api/board/updatetitle/
 	 */
 	ServiceCall<UpdateTitle, Done> updateTitle();
 
 
 	/**
-	 * Create: curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId", "status": "ARCHIVED"}' http://localhost:9000/api/board/changestatus/
+	 * curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId", "status": "ARCHIVED"}' http://localhost:9000/api/board/changestatus/
 	 */
 	ServiceCall<ChangeStatus, Done> changeStatus();
 
 
 	/**
-	 * Create: curl http://localhost:9000/api/board/listall/
+	 * curl http://localhost:9000/api/board/listall/
 	 */
 	ServiceCall<NotUsed, PSequence<String>> listAll();
 	

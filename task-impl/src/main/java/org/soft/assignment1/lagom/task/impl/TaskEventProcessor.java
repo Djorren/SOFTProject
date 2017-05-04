@@ -38,7 +38,6 @@ public class TaskEventProcessor extends ReadSideProcessor<TaskEvent> {
 	}
 	 
 	private CompletionStage<Done> prepareInfo() {
-		System.out.println("INSERTED INTO TABLE");
 		return session.prepare("INSERT INTO task (id, boardid) VALUES (?,?)").thenApply(ps -> {
 			setInfo(ps);
 			return Done.getInstance();
@@ -48,6 +47,7 @@ public class TaskEventProcessor extends ReadSideProcessor<TaskEvent> {
 	private CompletionStage<List<BoundStatement>> processInfoChanged(TaskCreated event) {
 		 BoundStatement bindInfo = info.bind();
 		 bindInfo.setString("id", event.id);
+		 bindInfo.setString("boardid", event.boardid);
 		 return completedStatement(bindInfo);
 	}
 	 
@@ -66,7 +66,6 @@ public class TaskEventProcessor extends ReadSideProcessor<TaskEvent> {
 	}
 	
 	private CompletionStage<Done> prepareCreateTables() {
-		System.out.println("TABLE CREATED");
 		return session.executeCreateTable(
 				"CREATE TABLE IF NOT EXISTS task ("
 				+ "id text, boardid text, "

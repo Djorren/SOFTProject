@@ -4,6 +4,8 @@
 package org.soft.assignment1.lagom.task.impl;
 
 import akka.Done;
+import akka.NotUsed;
+
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.NotFound;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
@@ -17,9 +19,15 @@ import org.soft.assignment1.lagom.task.impl.TaskEntity;
 //import org.soft.assignment1.lagom.task.impl.TaskCommand.CreateTask;
 //import org.soft.assignment1.lagom.task.impl.TaskCommand.GetTask;
 import org.soft.assignment1.lagom.task.impl.TaskCommand.UpdateTask;
+import org.pcollections.PSequence;
+import org.pcollections.TreePVector;
+import org.soft.assignment1.lagom.board.api.Board;
 import org.soft.assignment1.lagom.board.api.BoardService;
+import org.soft.assignment1.lagom.board.api.BoardStatus;
+// import org.soft.assignment1.lagom.board.impl.BoardCommand.GetBoard;
 import org.soft.assignment1.lagom.task.api.ChangeStatus;
 import org.soft.assignment1.lagom.task.api.GetInfo;
+import org.soft.assignment1.lagom.task.api.ListAll;
 //import org.soft.assignment1.lagom.board.impl.BoardCommand;
 //import org.soft.assignment1.lagom.board.impl.BoardCommand.GetBoard;
 //import org.soft.assignment1.lagom.board.impl.BoardCommand.UpdateBoard;
@@ -32,8 +40,11 @@ import org.soft.assignment1.lagom.task.api.UpdateDetails;
 
 import javax.inject.Inject;
 
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the HelloString.
@@ -176,6 +187,55 @@ public class TaskServiceImpl implements TaskService {
 	    	  }
 	      });
 	  };
+	}
+	
+	
+	
+	@Override
+	public ServiceCall<ListAll, PSequence<String>> listAll() {
+		return req -> {
+			String reqboardid = req.boardid;
+			// get all the task ids that were saved in the task table
+			CompletionStage<List<String>> allTaskIds =
+					cassandrasession.selectAll("SELECT * FROM task WHERE boardid = ? ALLOW FILTERING", reqboardid)
+					.thenApply(rows -> {
+						List<String> tasks = rows.stream()
+								.map(row -> row.getString("id"))
+								.collect(Collectors.toList());
+						return tasks;
+					});
+			
+			// filter the ids so that we only have those who belong to non-deleted tasks
+			CompletionStage<PSequence<String>> NotArchivedTaskIds =
+					allTaskIds.thenApply(taskids -> {
+						// get the task objects that correspond with the ids we got from the task table
+						List<Task> allTasks = taskids.stream()
+								.map( taskid -> {
+									CompletionStage<Task> completionTask = TaskEntityRef(taskid).ask(new GetTask()).thenApply(reply -> {
+										return reply.task.get();
+									});
+									try {
+										Task task = completionTask.toCompletableFuture().get();
+										return task; // return the object we got from the completed future
+									} catch (InterruptedException | ExecutionException e) {
+										e.printStackTrace();
+										return null;
+									}
+								})
+								.collect( Collectors.toList());
+						
+						// create a list containing only the tasks who are not DELETED
+						List<String> temp = new ArrayList<>();
+						allTasks.forEach((task) -> {
+							if(task.status != TaskStatus.DELETED) {
+								temp.add(task.toString());
+							}
+						});
+
+						return TreePVector.from(temp);
+					});	  
+			return NotArchivedTaskIds;
+		};
 	}
 	
 	
