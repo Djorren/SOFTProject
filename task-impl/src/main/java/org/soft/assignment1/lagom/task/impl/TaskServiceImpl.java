@@ -4,7 +4,6 @@
 package org.soft.assignment1.lagom.task.impl;
 
 import akka.Done;
-import akka.NotUsed;
 
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.NotFound;
@@ -21,16 +20,10 @@ import org.soft.assignment1.lagom.task.impl.TaskEntity;
 import org.soft.assignment1.lagom.task.impl.TaskCommand.UpdateTask;
 import org.pcollections.PSequence;
 import org.pcollections.TreePVector;
-import org.soft.assignment1.lagom.board.api.Board;
 import org.soft.assignment1.lagom.board.api.BoardService;
-import org.soft.assignment1.lagom.board.api.BoardStatus;
-// import org.soft.assignment1.lagom.board.impl.BoardCommand.GetBoard;
 import org.soft.assignment1.lagom.task.api.ChangeStatus;
 import org.soft.assignment1.lagom.task.api.GetInfo;
 import org.soft.assignment1.lagom.task.api.ListAll;
-//import org.soft.assignment1.lagom.board.impl.BoardCommand;
-//import org.soft.assignment1.lagom.board.impl.BoardCommand.GetBoard;
-//import org.soft.assignment1.lagom.board.impl.BoardCommand.UpdateBoard;
 import org.soft.assignment1.lagom.task.api.UpdateTitle;
 import org.soft.assignment1.lagom.task.api.Task;
 import org.soft.assignment1.lagom.task.api.TaskService;
@@ -91,7 +84,9 @@ public class TaskServiceImpl implements TaskService {
 	      PersistentEntityRef<TaskCommand> ref = TaskEntityRef(request.id);
 	      // Look up the current values of the board object
 	      return ref.ask(new GetTask()).thenApply(reply -> {
-	    	  if (reply.task.isPresent()) {
+	    	  if (reply.task.get().status.equals(TaskStatus.ARCHIVED)) {
+	    		  throw new NotFound("Task is archived");
+	    	  } else if (reply.task.isPresent()) {
 	    		  ref.ask(new UpdateTask(request.id, request.title, reply.task.get().details, reply.task.get().color, reply.task.get().boardid, reply.task.get().status));
 	    		  return Done.getInstance();
 	    	  } else {
@@ -112,7 +107,9 @@ public class TaskServiceImpl implements TaskService {
 	      PersistentEntityRef<TaskCommand> ref = TaskEntityRef(request.id);
 	      // Look up the current values of the board object
 	      return ref.ask(new GetTask()).thenApply(reply -> {
-	    	  if (reply.task.isPresent()) {
+	    	  if (reply.task.get().status.equals(TaskStatus.ARCHIVED)) {
+	    		  throw new NotFound("Task is archived");
+	    	  } else if (reply.task.isPresent()) {
 	    		  ref.ask(new UpdateTask(request.id, reply.task.get().details, request.details, reply.task.get().color, reply.task.get().boardid, reply.task.get().status));
 	    		  return Done.getInstance();
 	    	  } else {
@@ -129,7 +126,9 @@ public class TaskServiceImpl implements TaskService {
 	      PersistentEntityRef<TaskCommand> ref = TaskEntityRef(request.id);
 	      // Look up the current values of the board object
 	      return ref.ask(new GetTask()).thenApply(reply -> {
-	    	  if (reply.task.isPresent()) {
+	    	  if (reply.task.get().status.equals(TaskStatus.ARCHIVED)) {
+	    		  throw new NotFound("Task is archived");	  
+	    	  } else if (reply.task.isPresent()) {
 	    		  ref.ask(new UpdateTask(request.id, reply.task.get().details, reply.task.get().details, request.color, reply.task.get().boardid, reply.task.get().status));
 	    		  return Done.getInstance();
 	    	  } else {

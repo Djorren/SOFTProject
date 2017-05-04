@@ -5,7 +5,7 @@ package org.soft.assignment1.lagom.board.impl;
 
 import akka.Done;
 import akka.NotUsed;
-
+import scala.collection.parallel.Tasks;
 
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.transport.NotFound;
@@ -31,6 +31,9 @@ import org.soft.assignment1.lagom.board.api.ChangeStatus;
 import org.soft.assignment1.lagom.board.api.UpdateTitle;
 import org.soft.assignment1.lagom.board.impl.BoardCommand.*;
 import org.soft.assignment1.lagom.board.impl.BoardEventProcessor;
+import org.soft.assignment1.lagom.task.api.ListAll;
+import org.soft.assignment1.lagom.task.api.TaskService;
+import org.soft.assignment1.lagom.task.api.TaskStatus;
 
 /**
  * Implementation of the BoardService.
@@ -39,12 +42,14 @@ public class BoardServiceImpl implements BoardService {
 
 	private final PersistentEntityRegistry persistentEntityRegistry;
 	public final CassandraSession cassandrasession;
+	public final TaskService taskservice;
 
 	@Inject
 	public BoardServiceImpl(PersistentEntityRegistry persistentEntityRegistry, CassandraSession cassandrasession, 
-			ReadSide readSide) {
+			ReadSide readSide, TaskService taskservice) {
 		this.persistentEntityRegistry = persistentEntityRegistry;
 		this.cassandrasession = cassandrasession;
+		this.taskservice = taskservice;
 		persistentEntityRegistry.register(BoardEntity.class);
 		readSide.register(BoardEventProcessor.class);
 	}
@@ -116,10 +121,17 @@ public class BoardServiceImpl implements BoardService {
 	      return ref.ask(new GetBoard()).thenApply(reply -> {
 	    	  if (!reply.board.isPresent()) {
 	    		  throw new NotFound("Unknown board id"); 
+	    	  } else if (reply.board.get().status.equals(BoardStatus.ARCHIVED)) { // board is already archieved
+	    		  throw new NotFound("Board is already ARCHIVED");
 	    	  } else if (request.status.equals("CREATED")) {
+	    		  System.out.println(reply.board.get().status);
 	    		  ref.ask(new UpdateBoard(request.id,  reply.board.get().title, BoardStatus.CREATED));
 	    		  return Done.getInstance();
 	  	    } else if (request.status.equals("ARCHIVED")) {
+	  	    	/*CompletionStage<PSequence<String>> allTasks = taskservice.listAll().invoke();
+	  	    	allTasks.thenApply(tas -> {
+	  	    		
+	  	    	});*/
 	  	    	ref.ask(new UpdateBoard(request.id,  reply.board.get().title, BoardStatus.ARCHIVED));
 	    		  return Done.getInstance();
 	  	    } else {
@@ -136,7 +148,9 @@ public class BoardServiceImpl implements BoardService {
 	      PersistentEntityRef<BoardCommand> ref = boardEntityRef(request.id);
 	      // Look up the current values of the board object
 	      return ref.ask(new GetBoard()).thenApply(reply -> {
-	    	  if (reply.board.isPresent()) {
+	    	  if (reply.board.get().status.equals(BoardStatus.ARCHIVED)) {
+	    		  throw new NotFound("Board is archived");
+	    	  } else if (reply.board.isPresent()) {
 	    		  ref.ask(new UpdateBoard(request.id, request.title, reply.board.get().status));
 	    		  return Done.getInstance();
 	    	  } else {
