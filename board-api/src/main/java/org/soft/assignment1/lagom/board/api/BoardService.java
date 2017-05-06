@@ -24,7 +24,6 @@ public interface BoardService extends Service {
 
 	/**
 	 * curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId", "title": "MyTitle"}' http://localhost:9000/api/board/create/
-	 * curl -H "Content-Type: application/json" -X POST -d '{"id": "MyId2", "title": "MyTitle2"}' http://localhost:9000/api/board/create/
 	 */
 	ServiceCall<Board, Done> create();
 
